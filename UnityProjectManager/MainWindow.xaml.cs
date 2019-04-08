@@ -21,7 +21,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace UnityProjectManager
-{ 
+{
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
@@ -38,8 +38,8 @@ namespace UnityProjectManager
         {
             RegistryKey UnityTechnologies = Registry.CurrentUser.OpenSubKey("SOFTWARE", true).OpenSubKey("Unity Technologies", true);
             Unity4X = UnityTechnologies.OpenSubKey("Unity Editor 4.x", true);
-            Unity5X = UnityTechnologies.OpenSubKey("Unity Editor 5.x", true);  
-             ///
+            Unity5X = UnityTechnologies.OpenSubKey("Unity Editor 5.x", true);
+            ///
             RefreshDataGrid();
         }
 
@@ -52,30 +52,36 @@ namespace UnityProjectManager
             dt.Columns.Add(this.projectPath, System.Type.GetType("System.String"));///300
             dt.Columns.Add(this.projectID, System.Type.GetType("System.String"));///300
 
-            foreach (var item in Unity4X.GetValueNames())
+            if (Unity4X != null && Unity4X.GetValueNames() != null)
             {
-                if (item.IndexOf(registryKeyProjectName) >= 0)
+                foreach (var item in Unity4X.GetValueNames())
                 {
-                    //MessageBox.Show(Unity4X.GetValue(item).ToString());
+                    if (item.IndexOf(registryKeyProjectName) >= 0)
+                    {
+                        //MessageBox.Show(Unity4X.GetValue(item).ToString());
 
-                    string projectPath = Unity4X.GetValue(item).ToString();
-                    string[] projectNames = projectPath.Split('/');
-                    CreateRows(unity4X, projectNames[projectNames.Length - 1], projectPath, item.ToString());
+                        string projectPath = Unity4X.GetValue(item).ToString();
+                        string[] projectNames = projectPath.Split('/');
+                        CreateRows(unity4X, projectNames[projectNames.Length - 1], projectPath, item.ToString());
+                    }
                 }
             }
 
-            foreach (var item in Unity5X.GetValueNames())
+            if (Unity5X != null && Unity5X.GetValueNames() != null)
             {
-                if (item.IndexOf(registryKeyProjectName) >= 0)
+                foreach (var item in Unity5X.GetValueNames())
                 {
-                    //MessageBox.Show(Unity4X.GetValue(item).ToString());
-                    byte[] str = ObjectToBytes(Unity5X.GetValue(item));
-                    str = byteCut(str, 0x00);
-                    string projectPath = Encoding.Default.GetString(str).Trim();
-                    int index = 10;
-                    projectPath = projectPath.Substring(index, projectPath.Length - index);
-                    string[] projectNames = projectPath.Split('/');
-                    CreateRows(unity5X, projectNames[projectNames.Length - 1], projectPath, item.ToString());
+                    if (item.IndexOf(registryKeyProjectName) >= 0)
+                    {
+                        //MessageBox.Show(Unity4X.GetValue(item).ToString());
+                        byte[] str = ObjectToBytes(Unity5X.GetValue(item));
+                        str = byteCut(str, 0x00);
+                        string projectPath = Encoding.Default.GetString(str).Trim();
+                        int index = 10;
+                        projectPath = projectPath.Substring(index, projectPath.Length - index);
+                        string[] projectNames = projectPath.Split('/');
+                        CreateRows(unity5X, projectNames[projectNames.Length - 1], projectPath, item.ToString());
+                    }
                 }
             }
 
@@ -107,7 +113,7 @@ namespace UnityProjectManager
             return list.ToArray();
         }
 
-    DataTable dt;
+        DataTable dt;
         string registryKeyProjectName = "RecentlyUsedProjectPaths-";
         string projectVersion = "Unity版本";
         string projectName = "项目名称";
@@ -135,7 +141,7 @@ namespace UnityProjectManager
         {
             if (dataGrid.SelectedItems.Count <= 0)
             {
-                MessageBox.Show("请选中要删除的选项！！！","删除框");
+                MessageBox.Show("请选中要删除的选项！！！", "删除框");
                 return;
             }
 
@@ -161,7 +167,7 @@ namespace UnityProjectManager
                             Unity4X.DeleteValue(id);
                         }
                     }
-                    else if(version == unity5X)
+                    else if (version == unity5X)
                     {
                         if (Unity5X.GetValue(id) != null)
                         {
@@ -178,7 +184,7 @@ namespace UnityProjectManager
         {
             if (dataGrid.Items.Count <= 0)
             {
-                MessageBox.Show("无可删除选项！！！","删除框");
+                MessageBox.Show("无可删除选项！！！", "删除框");
                 return;
             }
 
